@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+    <title>mydesktopapp | Sketch Annotation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="./js/jquery-3.4.1.min.js"></script>
+    <style>
+        body {
+            margin: 0px;
+            /* background-color: rgba(0, 0, 0, 0) !important; */
+            background-color: transparent !important;
+        }
+
+        canvas {
+            -webkit-touch-callout: none;
+            -webkit-text-size-adjust: none;
+            -webkit-user-select: none;
+        }
+
+        .drag-enable {
+            -webkit-app-region: drag;
+        }
+
+        .drag-disable {
+            -webkit-app-region: no-drag;
+            -webkit-user-drag: none;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.6.95/css/materialdesignicons.css"
+        rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script defer type="text/javascript" src="./js/draw/jquery.drawr.combined.js"></script>
+</head>
+
+<body class="drag-enable">
+
+    <div id="drawr-container" style="width:100vw;height:100vh;">
+        <canvas class="demo-canvas drawr-test1" id="drawCanvas"></canvas>
+    </div>
+    <input type="file" id="file-picker" style="display:none;">
+    <script>
+        $(document).ready(function () {
+            // {presets, picker}
+            $("#drawr-container .demo-canvas").drawr({
+                "enable_tranparency": true,
+                "color_mode": "picker"
+            });
+
+            $(".demo-canvas").drawr("start");
+
+            $(".startAnnotation").click(function () {
+                console.log('Start Button clicked. Started Annotation');
+                $('body').removeClass('drag-enable');
+                openCanvasOnFullScreen();
+            })
+
+            /**
+            * @Breif - Stop Annotation
+            */
+            let buttoncollection = $("#drawr-container .demo-canvas").drawr("button", {
+                "icon": "mdi mdi-stop-circle mdi-24px",
+                "name": "stopAnnotation",
+                "tooltip": 'Stop Annotation',
+            }).on("touchstart mousedown", function () {
+                /* Enable body scroll */
+                $('body').addClass('drag-enable');
+
+                /* Clear Canvas */
+                $('.demo-canvas').drawr("clear");
+
+                /* hide Color selection tool, if already open */
+                $('.drawr-toolbox-settings').hide();
+
+                /* Disable all the brush tools */
+                $('.drawr-tool-btn').removeClass('active').css({ 'background': '#554d4d', 'color': 'rgb(0, 0, 0)', 'pointer-events': 'none', 'cursor': 'default' })
+
+                /* Enable & activate Start (1st) button from brush tools */
+                $('.startAnnotation').addClass('active').css({ 'background': 'orange', 'color': 'white', 'pointer-events': '', 'cursor': 'pointer' });
+
+                /* Enable close button as well, so that user can close annotation at any time  */
+                $('.closeAnnotation').css({ 'background': 'rgb(238, 238, 238)', 'pointer-events': '', 'cursor': 'pointer' });
+
+                $('#canvasBrush').css({ 'top': '0px', 'left': '0px' });
+                $("#drawr-container canvas").attr({ width: 80, height: 306 }).width(80).height(306);
+
+                window.minimizeCanvas();
+            });
+
+            /**
+            * @Breif - Clear Annotation
+            */
+            buttoncollection = $("#drawr-container .demo-canvas").drawr("button", {
+                "icon": "mdi mdi-delete-forever mdi-24px",
+                "name": "clearScreen",
+                "tooltip": 'Clear Screen',
+            }).on("touchstart mousedown", function () {
+                //alert("demo of a custom button with your own functionality!");
+                $('.demo-canvas').drawr("clear");
+            });
+
+            /**
+             * @Breif - Close Annotation
+            */
+            buttoncollection = $("#drawr-container .demo-canvas").drawr("button", {
+                "icon": "mdi mdi-close-circle mdi-24px",
+                "name": "closeAnnotation",
+                "tooltip": 'Close Annotation',
+                "eClass": 'drag-disable',
+            }).on("touchstart mousedown", function () {
+                //alert("demo of a custom button with your own functionality!");
+                window.close();
+            });
+
+            buttoncollection = $("#drawr-container .demo-canvas").drawr("button", {
+                "icon": "mdi mdi-content-save mdi-24px",
+                "name": "saveDrawing",
+                "tooltip": 'Save As',
+            }).on("touchstart mousedown", function () {
+                let imagedata = $("#drawr-container .demo-canvas").drawr("export", "image/png");
+                let element = document.createElement('a');
+                element.setAttribute('href', imagedata);// 'data:text/plain;charset=utf-8,' + encodeURIComponent("sillytext"));
+                element.setAttribute('download', "test.png");
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            });
+
+
+            $('.drawr-toolbox-brush .drawr-tool-btn:not(.active)').removeClass('active').css({ 'background': '#554d4d', 'pointer-events': 'none', 'cursor': 'default' });
+            $('.closeAnnotation').css({ 'background': 'rgb(238, 238, 238)', 'pointer-events': '', 'cursor': 'pointer' });
+        })
+    </script>
+</body>
+
+</html>

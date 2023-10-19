@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+    <title>mydesktopapp | Sketch Annotation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body class="drag-enable">
+    <div>Hello! Click below button to start Annotating on the screen</div>
+    <br>
+    <button onclick="testDraw()"> Click me draw</button>
+</body>
+
+<script>
+    /* const nwWin = nw.Window.get();
+    nwWin.showDevTools(); */
+
+    global.windowCommunication = {
+	    // This is for stuff specific to the main window
+        main: {
+            window: window,
+            document: window.document,
+            alert: function (message) {
+                window.alert(message);
+            }
+        },
+        annotate:{
+            /*testannotate: function(nwin, width, height){
+                nwin.window.test(nwin, width, height);
+            },*/
+            passIntance: function(nwin){
+                nwin.window.setWindowInstance(nwin);
+            }
+        }
+    };
+
+    function testDraw(){
+        nw.Window.open("./annotate.html",
+            {
+                position: 'center',
+                width: 80,
+                height: 306,
+                transparent:true, 
+                frame:false, 
+                show_in_taskbar:false, 
+                always_on_top:true,
+                inject_js_start: "./js/annotation.js"
+            }, function(new_win) {
+                //new_win.showDevTools(); 
+                new_win.on('loaded', function(){
+                    global.windowCommunication.annotate.window = new_win.window;
+                    global.windowCommunication.annotate.document = new_win.window.document;
+                    global.windowCommunication.annotate.alert = function (message) {
+                        new_win.window.alert(message);
+                    }
+                    //setTimeout(() => {
+                        global.windowCommunication.annotate.passIntance(new_win);
+                    //}, 300);
+                })
+        });
+    }
+
+    
+    // Close the channel when the tab is closed
+    window.addEventListener('beforeunload', function () {
+        /* Close annotation */
+        try {
+            global.windowCommunication.annotate.window.close();
+        } catch (error) {
+            console.log(`annotation is not running right now`);
+        }
+    });
+</script>
+</html>

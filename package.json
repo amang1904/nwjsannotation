@@ -1,0 +1,22 @@
+{
+  "name": "nwjsannotation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+	"scripts": {
+		"dev": "nw ."
+	},
+	"window": {
+		"title": "nwjsannotation",
+		"width": 310,
+		"height": 400,
+		"position": "center"
+	},
+  "chromium-args": "--enable-features=NativeNotifications --disable-raf-throttling --enable-transparent-visuals",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+		"nw": "0.80.0-sdk"
+	}
+}
